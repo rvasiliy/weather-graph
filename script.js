@@ -16,7 +16,7 @@ function draw(data, context) {
     const dataCount = data.length;
     const hourSize = width / dataCount;
 
-    const MAX_TEMPERATURE = 35;
+    const MAX_TEMPERATURE = 40;
     const temperatureSize = height / MAX_TEMPERATURE;
 
     context.beginPath();
