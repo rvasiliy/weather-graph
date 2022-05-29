@@ -36,7 +36,7 @@ function draw(data, context) {
         }
     });
 
-    context.strokeStyle = '#ff0000';
+    context.strokeStyle = '#ff00ff';
     context.stroke();
 }
 
