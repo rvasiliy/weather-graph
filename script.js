@@ -52,7 +52,7 @@ function drawAxises(context) {
     context.moveTo(0, height / 2);
     context.lineTo(width, height / 2);
 
-    context.strokeStyle = '#0000ff';
+    context.strokeStyle = '#000000';
     context.stroke();
 }
 
