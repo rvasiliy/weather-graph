@@ -13,10 +13,12 @@ function loadData(url) {
 function draw(data, context) {
     const { width, height } = context.canvas;
 
+    drawAxises(context)
+
     const dataCount = data.length;
     const hourSize = width / dataCount;
 
-    const MAX_TEMPERATURE = 40;
+    const MAX_TEMPERATURE = 80;
     const temperatureSize = height / MAX_TEMPERATURE;
 
     context.beginPath();
@@ -27,7 +29,7 @@ function draw(data, context) {
         const dateTime = new Date(date);
 
         const x = hourSize * dateTime.getUTCHours();
-        const y = height - temperature * temperatureSize;
+        const y = height - temperature * temperatureSize - height / 2;
 
         if (0 === i) {
             context.moveTo(x, y);
@@ -36,7 +38,20 @@ function draw(data, context) {
         }
     });
 
+    context.lineWidth = 2;
     context.strokeStyle = '#ff00ff';
+    context.stroke();
+}
+
+function drawAxises(context) {
+    const { width, height } = context.canvas;
+    
+    context.beginPath();
+
+    context.moveTo(0, height / 2);
+    context.lineTo(width, height / 2);
+
+    context.strokeStyle = '#0000ff';
     context.stroke();
 }
 
