@@ -13,8 +13,6 @@ function loadData(url) {
 function draw(data, context) {
     const { width, height } = context.canvas;
 
-    drawAxises(context)
-
     const dataCount = data.length;
     const hourSize = width / dataCount;
 
@@ -23,12 +21,15 @@ function draw(data, context) {
 
     context.beginPath();
 
+    const startTime = Date.parse('2022-05-28T00:00:00Z');
+    const MILLISECONDS_IN_HOUR = 3.6e6;
+
     data.forEach((item, i) => {
         const { date, temperature } = item;
 
-        const dateTime = new Date(date);
+        const dateTime = Date.parse(date);
 
-        const x = hourSize * dateTime.getUTCHours();
+        const x = hourSize * ((dateTime - startTime) / MILLISECONDS_IN_HOUR);
         const y = height - temperature * temperatureSize - height / 2;
 
         if (0 === i) {
@@ -61,5 +62,6 @@ function drawAxises(context) {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
+    drawAxises(ctx);
     draw(data, ctx);
 })();
