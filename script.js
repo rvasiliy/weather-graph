@@ -20,7 +20,8 @@ function draw(data, context) {
     const temperatureSize = height / MAX_TEMPERATURE;
 
     context.beginPath();
-
+    context.setLineDash([]);
+    
     const startTime = Date.parse('2022-05-28T00:00:00Z');
     const MILLISECONDS_IN_HOUR = 3.6e6;
 
@@ -46,16 +47,17 @@ function draw(data, context) {
 
 function drawAxises(context) {
     const { width, height } = context.canvas;
-    
+
     context.beginPath();
+    context.setLineDash([9, 1]);
 
     context.moveTo(0, height / 2);
     context.lineTo(width, height / 2);
-
+    
     context.moveTo(0, height);
     context.lineTo(0, 0);
-
-    context.strokeStyle = '#000000';
+    
+    context.strokeStyle = '#000000';  
     context.stroke();
 }
 
