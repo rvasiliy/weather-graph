@@ -206,21 +206,4 @@ function calcAxisXIntersection(startX, startY, endX, endY, baseY) {
 
     drawAxises(ctx);
     draw(data, ctx);
-
-    // const start = {x: 5, y: 5};
-    // const end = {x: 300, y: 250};
-
-    // ctx.beginPath();
-    // ctx.moveTo(start.x, start.y);
-
-    // const {x, y} = calcAxisXIntersection(start.x, start.y, end.x, end.y, 150);
-
-    // ctx.lineTo(x, y);
-    // ctx.stroke();
-
-    // ctx.beginPath();
-    // ctx.moveTo(x, y);
-    // ctx.lineTo(end.x, end.y);
-
-    // ctx.stroke();
 })();
