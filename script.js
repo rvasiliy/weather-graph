@@ -18,11 +18,18 @@ function draw(data, context) {
 
     const MAX_TEMPERATURE = 80;
     const temperatureSize = height / MAX_TEMPERATURE;
+    const TEMPERATURE_ZERO_Y = height / 2;
+
+    const POSITIVE_TEMPERATURE_COLOR = '#ff0000';
+    const NEGATIVE_TEMPERATURE_COLOR = '#0000ff';
 
     context.beginPath();
+    context.lineWidth = 2;
 
-    const startTime = Date.parse('2022-05-28T00:00:00Z');
+    const startTime = Date.parse('2022-05-27T20:00:00Z');
     const MILLISECONDS_IN_HOUR = 3.6e6;
+
+    let isTemperaturePositive = true;
 
     data.forEach((item, i) => {
         const { date, temperature } = item;
@@ -30,17 +37,58 @@ function draw(data, context) {
         const dateTime = Date.parse(date);
 
         const x = hourSize * ((dateTime - startTime) / MILLISECONDS_IN_HOUR);
-        const y = height - temperature * temperatureSize - height / 2;
+        const y = height - temperature * temperatureSize - TEMPERATURE_ZERO_Y;
 
         if (0 === i) {
             context.moveTo(x, y);
+
+            isTemperaturePositive = y <= TEMPERATURE_ZERO_Y;
         } else {
+            // переход от положительных температур к отрицательным
+            if (TEMPERATURE_ZERO_Y < y && isTemperaturePositive) {
+                const { date, temperature } = data[i - 1];
+                const dateTime = Date.parse(date);
+                const prevX = hourSize * ((dateTime - startTime) / MILLISECONDS_IN_HOUR);
+                const prevY = height - temperature * temperatureSize - TEMPERATURE_ZERO_Y;
+
+                const { x: pX, y: pY } = calcAxisXIntersection(prevX, prevY, x, y, TEMPERATURE_ZERO_Y);
+
+                context.lineTo(pX, pY);
+
+                context.strokeStyle = POSITIVE_TEMPERATURE_COLOR;
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(pX, pY);
+
+                isTemperaturePositive = false;
+            }
+
+            // переход от отрицательных температур к положительным
+            if (y <= TEMPERATURE_ZERO_Y && !isTemperaturePositive) {
+                const { date, temperature } = data[i - 1];
+                const dateTime = Date.parse(date);
+                const prevX = hourSize * ((dateTime - startTime) / MILLISECONDS_IN_HOUR);
+                const prevY = height - temperature * temperatureSize - TEMPERATURE_ZERO_Y;
+
+                const { x: pX, y: pY } = calcAxisXIntersection(prevX, prevY, x, y, TEMPERATURE_ZERO_Y);
+
+                context.lineTo(pX, pY);
+
+                context.strokeStyle = NEGATIVE_TEMPERATURE_COLOR;
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(pX, pY);
+
+                isTemperaturePositive = true;
+            }
+
             context.lineTo(x, y);
         }
     });
 
-    context.lineWidth = 2;
-    context.strokeStyle = '#ff00ff';
+    context.strokeStyle = isTemperaturePositive ? POSITIVE_TEMPERATURE_COLOR : NEGATIVE_TEMPERATURE_COLOR;
     context.stroke();
 }
 
@@ -129,6 +177,27 @@ function drawDashLine(context, startX, startY, endX, endY, width) {
     context.stroke();
 }
 
+/**
+ * Вычисляет координату пересечения отрезка с осью OX
+ * 
+ * @param {number} startX Начальная координата x
+ * @param {number} startY Начальная координата y
+ * @param {number} endX Конечная координата x
+ * @param {number} endY Конечная координата y
+ * @param {number} baseY Значение координаты y оси OX
+ */
+function calcAxisXIntersection(startX, startY, endX, endY, baseY) {
+    let delta = (endY - startY) / (baseY - startY);
+    let x = startX + ((endX - startX) / delta);
+
+    return {
+        x,
+        y: baseY
+    };
+}
+
+// const a = calcAxisXIntersection(startX, startY, endX, endY, baseY) => {x: 2, y: 3}
+
 (async () => {
     const data = await loadData('/data/temperature.json');
 
@@ -137,4 +206,21 @@ function drawDashLine(context, startX, startY, endX, endY, width) {
 
     drawAxises(ctx);
     draw(data, ctx);
+
+    // const start = {x: 5, y: 5};
+    // const end = {x: 300, y: 250};
+
+    // ctx.beginPath();
+    // ctx.moveTo(start.x, start.y);
+
+    // const {x, y} = calcAxisXIntersection(start.x, start.y, end.x, end.y, 150);
+
+    // ctx.lineTo(x, y);
+    // ctx.stroke();
+
+    // ctx.beginPath();
+    // ctx.moveTo(x, y);
+    // ctx.lineTo(end.x, end.y);
+
+    // ctx.stroke();
 })();
